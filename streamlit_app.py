@@ -147,4 +147,4 @@ input_array = encoded_input.values
 # Make a prediction
 if st.button('Predict'):
     prediction = model.predict(input_array)
-    st.write(f"The predicted grade (G3) for the student is: {prediction[0]:.2f}")
+    st.success(f"The predicted grade (G3) for the student is: {prediction[0]:.2f}")

@@ -668,8 +668,6 @@ def get_input():
 
 import builtins
 
-import builtins
-
 def get_input():
     # Ask for user input (you can customize these questions based on the dataset)
     school = int(builtins.input("Enter the school (1 for GP, 2 for MS): "))
