@@ -723,5 +723,5 @@ def predict_performance(input_data):
     print(f"The predicted grade (G3) for the student is: {prediction[0]}")
 
 # In your main execution cell
-user_input = get_input() # Changed variable name to 'user_input'
-predict_performance(user_input) # Pass 'user_input' to the function
+# user_input = get_input() # Changed variable name to 'user_input'
+# predict_performance(user_input) # Pass 'user_input' to the function
