@@ -1,5 +1,11 @@
 import streamlit as st
 import pandas as pd
+import pickle
+from model import DecisionTreeRegressorScratch, RandomForestRegressorScratch
+
+# Load the model from the pickle file
+with open('random_forest_model.pkl', 'rb') as file:
+    model = pickle.load(file)
 
 st.title('Student Performance Prediction App')
 
@@ -7,10 +13,10 @@ st.info('ML Group project of team number 35')
 
 with st.expander('Data'):
     st.write("**Raw Data**")
-    df = pd.read_csv('./data/student-mat.csv',delimiter=';')
+    df = pd.read_csv('./data/student-mat.csv', delimiter=';')
     df
     st.write('**X**')
-    X_raw = df.drop('G3',axis=1)
+    X_raw = df.drop('G3', axis=1)
     X_raw
 
     st.write('**y**')
@@ -18,45 +24,45 @@ with st.expander('Data'):
     y_raw
 
 with st.expander('Data Visualization'):
-    st.scatter_chart(data=df, x='G1',y='G2',color='G3')
+    st.scatter_chart(data=df, x='G1', y='G2', color='G3')
 
 with st.sidebar:
     st.header('Input Features')
-    island = st.selectbox('school',('GP','MS'))
-    sex = st.selectbox('Gender',('M','F'))
-    # min,max,avg
-    age = st.slider('Age (years)',15,22,18)
-    address = st.selectbox('address',('U','R'))
-    famsize = st.selectbox('Family Size',('LE3','GT3'))
-    famrel = st.slider('Quality of family Relationship',1,5,3)
-    Pstatus = st.selectbox('Parents Status',('T','A'))
-    Medu = st.slider('Mothers Education',1,4,3)
-    Fedu = st.slider('Fathers Education',1,4,3)
-    Mjob = st.selectbox('Mothers Job',('at_home','health','other','services','teacher'))
-    Fjob = st.selectbox('Fathers Job',('teacher', 'other', 'services', 'health','at_home'))
-    reason = st.selectbox('Reason for choosing school',('course','other','home','reputation'))
-    guardian = st.selectbox('Guardian',('mother','father','other'))
-    traveltime = st.slider('Travel Time',1,4,2)
-    studytime = st.slider('Study Time',1,4,2)
-    failures = st.slider('Failures',1,4,2)
-    schoolsup = st.selectbox('School Support',('yes','no'))
-    famsup = st.selectbox('Family Support',('yes','no'))
-    activities = st.selectbox('Extracurricular activities',('yes','no'))
-    paid = st.selectbox('Extra paid class',('yes','no'))
-    internet = st.selectbox('Internet Access',('yes','no'))
-    nursery = st.selectbox('Attended Nursery',('yes','no'))
-    higher = st.selectbox('Higher Education',('yes','no'))
-    romantic = st.selectbox('Romantic Relationship',('yes','no'))
-    freetime = st.slider('Free Time',1,5,3)
-    goout = st.slider('Go out with friends',1,5,3)
-    Walc = st.slider('Weekend Alcohol Consumption',1,5,2)
-    Dalc = st.slider('Workday Alcohol Consumption',1,5,2)
-    health = st.slider('Current health status',1,5,3)
-    absence = st.slider('Absences',0,93,10)
-    G1 = st.slider('Grade in term 1',0,20,15)
-    G2 = st.slider('Grade in term 2',0,20,15)
+    island = st.selectbox('school', ('GP', 'MS'))
+    sex = st.selectbox('Gender', ('M', 'F'))
+    # min, max, avg
+    age = st.slider('Age (years)', 15, 22, 18)
+    address = st.selectbox('address', ('U', 'R'))
+    famsize = st.selectbox('Family Size', ('LE3', 'GT3'))
+    famrel = st.slider('Quality of family Relationship', 1, 5, 3)
+    Pstatus = st.selectbox('Parents Status', ('T', 'A'))
+    Medu = st.slider('Mothers Education', 1, 4, 3)
+    Fedu = st.slider('Fathers Education', 1, 4, 3)
+    Mjob = st.selectbox('Mothers Job', ('at_home', 'health', 'other', 'services', 'teacher'))
+    Fjob = st.selectbox('Fathers Job', ('teacher', 'other', 'services', 'health', 'at_home'))
+    reason = st.selectbox('Reason for choosing school', ('course', 'other', 'home', 'reputation'))
+    guardian = st.selectbox('Guardian', ('mother', 'father', 'other'))
+    traveltime = st.slider('Travel Time', 1, 4, 2)
+    studytime = st.slider('Study Time', 1, 4, 2)
+    failures = st.slider('Failures', 1, 4, 2)
+    schoolsup = st.selectbox('School Support', ('yes', 'no'))
+    famsup = st.selectbox('Family Support', ('yes', 'no'))
+    activities = st.selectbox('Extracurricular activities', ('yes', 'no'))
+    paid = st.selectbox('Extra paid class', ('yes', 'no'))
+    internet = st.selectbox('Internet Access', ('yes', 'no'))
+    nursery = st.selectbox('Attended Nursery', ('yes', 'no'))
+    higher = st.selectbox('Higher Education', ('yes', 'no'))
+    romantic = st.selectbox('Romantic Relationship', ('yes', 'no'))
+    freetime = st.slider('Free Time', 1, 5, 3)
+    goout = st.slider('Go out with friends', 1, 5, 3)
+    Walc = st.slider('Weekend Alcohol Consumption', 1, 5, 2)
+    Dalc = st.slider('Workday Alcohol Consumption', 1, 5, 2)
+    health = st.slider('Current health status', 1, 5, 3)
+    absence = st.slider('Absences', 0, 93, 10)
+    G1 = st.slider('Grade in term 1', 0, 20, 15)
+    G2 = st.slider('Grade in term 2', 0, 20, 15)
 
-# Create a DataFrame for the input features
+    # Create a DataFrame for the input features
     data = {
         'school': island,
         'sex': sex,
@@ -91,14 +97,13 @@ with st.sidebar:
         'G1': G1,
         'G2': G2,
     }
-    
-    input_df = pd.DataFrame(data,index=[0])
-    input_students = pd.concat([input_df,X_raw],axis=0)
+
+    input_df = pd.DataFrame(data, index=[0])
 
 with st.expander('Input Features'):
     st.write('**Input Student**')
     input_df
-    
+
 # Data preparation
 
 encoding_mappings = {
@@ -121,29 +126,25 @@ encoding_mappings = {
     'romantic': {'yes': 2, 'no': 1},
 }
 
-encoded_input = input_df.copy()
+# Encode the input data
+encoded_input = input_df.replace(encoding_mappings)
 
 # Encode the raw dataset (X_raw)
-encoded_X_raw = X_raw.copy()
+encoded_X_raw = X_raw.replace(encoding_mappings)
 
-# Apply the encoding mappings
-for column, mapping in encoding_mappings.items():
-    if column in encoded_X_raw.columns:
-        encoded_X_raw[column] = encoded_X_raw[column].replace(mapping)
-
-# Combine encoded input with the encoded dataset
-input_students_encoded = pd.concat([encoded_input, encoded_X_raw], axis=0)
-
-# Apply the encoding mappings
-for column, mapping in encoding_mappings.items():
-    if column in encoded_input.columns:
-        encoded_input[column] = encoded_input[column].replace(mapping)
-
-# Combine input data with the rest of the dataset for consistency
-input_students_encoded = pd.concat([encoded_input, X_raw], axis=0)
+# Align columns of encoded_input with encoded_X_raw
+encoded_input = encoded_input[encoded_X_raw.columns]
 
 with st.expander('Data preparation'):
-    st.write('**Encoded  Data**')
+    st.write('**Encoded Input Data**')
+    st.write(encoded_input)  # Show only the first row (user input)
+    st.write('**Encoded Raw Data**')
     st.write(encoded_X_raw)  # Show only the first row (user input)
-    st.write('**Encoded Input Features**')
-    st.write(input_students_encoded.head(1))  # Show only the first row (user input)
+
+# Convert the DataFrame to an array
+input_array = encoded_input.values
+
+# Make a prediction
+if st.button('Predict'):
+    prediction = model.predict(input_array)
+    st.write(f"The predicted grade (G3) for the student is: {prediction[0]:.2f}")
